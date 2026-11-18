@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright (c) 2026 idavoll-ui contributors. Part of idavoll-ui: https://github.com/che-wf/idavoll-ui
+// Copyright (c) 2026 idavoll-ui contributors. Part of idavoll-ui: https://github.com/Fjordlight-Media/idavoll-ui
 import { Film, RefreshCw } from "lucide-react";
 import { EmptyState } from "@/components/idavoll/empty-state";
 import { Button } from "@/components/ui/button";

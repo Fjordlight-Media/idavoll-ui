@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright (c) 2026 idavoll-ui contributors. Part of idavoll-ui: https://github.com/che-wf/idavoll-ui
+// Copyright (c) 2026 idavoll-ui contributors. Part of idavoll-ui: https://github.com/Fjordlight-Media/idavoll-ui
 import { BarChart3, LineChart, Monitor, Moon, Sun, Table2 } from "lucide-react";
 import { useState } from "react";
 import { SegmentedControl } from "@/components/idavoll/segmented-control";

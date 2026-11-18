@@ -1,7 +1,7 @@
 {
   "$schema": "https://ui.shadcn.com/schema/registry.json",
   "name": "idavoll",
-  "homepage": "https://github.com/che-wf/idavoll-ui",
+  "homepage": "https://github.com/Fjordlight-Media/idavoll-ui",
   "items": [
     {
       "name": "idavoll-base",

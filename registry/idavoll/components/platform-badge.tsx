@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright (c) 2026 idavoll-ui contributors. Part of idavoll-ui: https://github.com/che-wf/idavoll-ui
+// Copyright (c) 2026 idavoll-ui contributors. Part of idavoll-ui: https://github.com/Fjordlight-Media/idavoll-ui
 import type { ComponentProps } from "react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";

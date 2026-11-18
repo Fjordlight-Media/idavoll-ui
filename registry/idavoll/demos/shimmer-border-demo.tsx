@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright (c) 2026 idavoll-ui contributors. Part of idavoll-ui: https://github.com/che-wf/idavoll-ui
+// Copyright (c) 2026 idavoll-ui contributors. Part of idavoll-ui: https://github.com/Fjordlight-Media/idavoll-ui
 import { Crown, Sparkles } from "lucide-react";
 import { AnimatedNumber } from "@/components/idavoll/animated-number";
 import { ShimmerBorder } from "@/components/idavoll/shimmer-border";

@@ -7,7 +7,7 @@ Components install with the shadcn CLI, so the code lands **in your project** an
 yours to change. They're built on Radix, Tailwind CSS v4 and Recharts, and follow your
 project's shadcn theme.
 
-**Preview:** https://che-wf.github.io/idavoll-ui/
+**Preview:** https://fjordlight-media.github.io/idavoll-ui/
 
 ## Components
 
@@ -27,7 +27,7 @@ You need a project already set up with shadcn/ui (`npx shadcn@latest init`).
 **1. Add the registry once:**
 
 ```sh
-npx shadcn@latest registry add @idavoll=https://che-wf.github.io/idavoll-ui/r/{name}.json
+npx shadcn@latest registry add @idavoll=https://fjordlight-media.github.io/idavoll-ui/r/{name}.json
 ```
 
 **2. Add components:**

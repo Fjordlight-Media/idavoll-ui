@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright (c) 2026 idavoll-ui contributors. Part of idavoll-ui: https://github.com/che-wf/idavoll-ui
+// Copyright (c) 2026 idavoll-ui contributors. Part of idavoll-ui: https://github.com/Fjordlight-Media/idavoll-ui
 import { useState } from "react";
 import { ProgressChart, type ProgressPost, type ProgressSeries } from "@/components/idavoll/progress-chart";
 import { SOCIAL_ICONS } from "@/components/idavoll/social-icon";

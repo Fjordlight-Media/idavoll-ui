@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright (c) 2026 idavoll-ui contributors. Part of idavoll-ui: https://github.com/che-wf/idavoll-ui
+// Copyright (c) 2026 idavoll-ui contributors. Part of idavoll-ui: https://github.com/Fjordlight-Media/idavoll-ui
 import { useMemo, useState } from "react";
 import { astroEvents } from "@/components/idavoll/astro-events";
 import { CalendarCategoryManager } from "@/components/idavoll/calendar-category-manager";

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright (c) 2026 idavoll-ui contributors. Part of idavoll-ui: https://github.com/che-wf/idavoll-ui
+// Copyright (c) 2026 idavoll-ui contributors. Part of idavoll-ui: https://github.com/Fjordlight-Media/idavoll-ui
 import { CalendarDayDetails } from "@/components/idavoll/calendar-day-details";
 import type { CalendarCategory, CalendarEvent, CalendarMarker } from "@/components/idavoll/content-calendar";
 
