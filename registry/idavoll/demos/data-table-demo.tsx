@@ -3,7 +3,7 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { Download } from "lucide-react";
 import { formatCompact } from "@/components/idavoll/animated-number";
-import { DataTable, DataTableColumnHeader } from "@/components/idavoll/data-table";
+import { DataTable, DataTableColumnHeader, type DataTableFeatures } from "@/components/idavoll/data-table";
 import { SOCIAL_ICONS, SocialIcon, type SocialPlatform } from "@/components/idavoll/social-icon";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -74,7 +74,7 @@ const STATUS_DOT: Record<Post["status"], string> = {
   Draft: "bg-foreground/40",
 };
 
-const columns: ColumnDef<Post>[] = [
+const columns: ColumnDef<DataTableFeatures, Post>[] = [
   {
     accessorKey: "day",
     header: ({ column }) => <DataTableColumnHeader column={column} title="Day" />,
@@ -165,7 +165,7 @@ const videos: VideoRow[] = Array.from({ length: 9 }, (_, i) => {
   };
 });
 
-const videoColumns: ColumnDef<VideoRow>[] = [
+const videoColumns: ColumnDef<DataTableFeatures, VideoRow>[] = [
   {
     accessorKey: "title",
     header: "Video",
