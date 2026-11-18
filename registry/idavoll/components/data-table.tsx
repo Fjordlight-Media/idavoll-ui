@@ -3,23 +3,34 @@
 "use client";
 
 import {
+  type CellData,
   type Column,
   type ColumnDef,
   type ColumnFiltersState,
+  type ColumnVisibilityState,
+  columnFacetingFeature,
+  columnFilteringFeature,
+  columnVisibilityFeature,
+  createExpandedRowModel,
+  createFacetedRowModel,
+  createFacetedUniqueValues,
+  createFilteredRowModel,
+  createPaginatedRowModel,
+  createSortedRowModel,
   type ExpandedState,
   type FilterFn,
+  filterFns,
   flexRender,
-  getCoreRowModel,
-  getExpandedRowModel,
-  getFacetedRowModel,
-  getFacetedUniqueValues,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
+  globalFilteringFeature,
   type RowData,
+  rowExpandingFeature,
+  rowPaginationFeature,
+  rowSortingFeature,
   type SortingState,
-  useReactTable,
-  type VisibilityState,
+  sortFns,
+  type TableFeatures,
+  tableFeatures,
+  useTable,
 } from "@tanstack/react-table";
 import {
   ArrowDown,
@@ -49,7 +60,11 @@ import { TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/compon
 import { cn } from "@/lib/utils";
 
 declare module "@tanstack/react-table" {
-  interface ColumnMeta<TData extends RowData, TValue> {
+  interface ColumnMeta<
+    in out TFeatures extends TableFeatures,
+    in out TData extends RowData,
+    TValue extends CellData = CellData,
+  > {
     /** Column name for the column menu, when the header isn't plain text. */
     label?: string;
     /** Classes for this column's cells, e.g. "text-right" for numbers. */
@@ -65,11 +80,34 @@ declare module "@tanstack/react-table" {
   }
 }
 
+/**
+ * The TanStack Table features DataTable uses. Type your columns with them:
+ * `ColumnDef<DataTableFeatures, Row>[]`, or `createColumnHelper<DataTableFeatures, Row>()`.
+ */
+export const dataTableFeatures = tableFeatures({
+  columnFilteringFeature,
+  globalFilteringFeature,
+  columnFacetingFeature,
+  rowSortingFeature,
+  columnVisibilityFeature,
+  rowExpandingFeature,
+  rowPaginationFeature,
+  filteredRowModel: createFilteredRowModel(),
+  facetedRowModel: createFacetedRowModel(),
+  facetedUniqueValues: createFacetedUniqueValues(),
+  sortedRowModel: createSortedRowModel(),
+  expandedRowModel: createExpandedRowModel(),
+  paginatedRowModel: createPaginatedRowModel(),
+  // Every built-in filter and sort function, so "auto" picks them the way TanStack Table v8 did.
+  filterFns,
+  sortFns,
+});
+export type DataTableFeatures = typeof dataTableFeatures;
+
 const CLAMP = { 1: "line-clamp-1", 2: "line-clamp-2", 3: "line-clamp-3", 4: "line-clamp-4" } as const;
 
 /** Cell classes and size for a column: wrap by default, or keep to one line. */
-// biome-ignore lint/suspicious/noExplicitAny: works for any column value type.
-function cellLayout(column: Column<any, unknown>) {
+function cellLayout<TData extends RowData>(column: Column<DataTableFeatures, TData, unknown>) {
   const meta = column.columnDef.meta;
   return {
     className: cn("px-3", meta?.nowrap ? "whitespace-nowrap" : "whitespace-normal break-words", meta?.className),
@@ -78,8 +116,11 @@ function cellLayout(column: Column<any, unknown>) {
 }
 
 /** Wraps a cell's content in a line clamp when the column asks for one. */
-// biome-ignore lint/suspicious/noExplicitAny: works for any column value type.
-function clamped(column: Column<any, unknown>, value: unknown, content: ReactNode) {
+function clamped<TData extends RowData>(
+  column: Column<DataTableFeatures, TData, unknown>,
+  value: unknown,
+  content: ReactNode,
+) {
   const lines = column.columnDef.meta?.lines;
   if (!lines) return content;
   return (
@@ -107,10 +148,10 @@ export interface DataTableFilter {
   options?: DataTableFilterOption[];
 }
 
-export interface DataTableProps<TData> {
+export interface DataTableProps<TData extends RowData> {
   /** Column definitions, as in TanStack Table. Use DataTableColumnHeader as a header to make a column sortable. */
   // biome-ignore lint/suspicious/noExplicitAny: columns hold values of different types, as in TanStack's own examples.
-  columns: ColumnDef<TData, any>[];
+  columns: ColumnDef<DataTableFeatures, TData, any>[];
   /** The rows. */
   data: TData[];
   /** What the table shows, e.g. "Posts". Screen readers use it as the table's name. */
@@ -156,7 +197,8 @@ export interface DataTableProps<TData> {
 }
 
 /** Matches when the cell's value is one of the chosen values. */
-const oneOf: FilterFn<unknown> = (row, columnId, chosen: string[]) =>
+// biome-ignore lint/suspicious/noExplicitAny: works for any row type.
+const oneOf: FilterFn<DataTableFeatures, any> = (row, columnId, chosen: string[]) =>
   !chosen?.length || chosen.includes(String(row.getValue(columnId)));
 oneOf.autoRemove = (value: string[] | undefined) => !value?.length;
 
@@ -166,13 +208,13 @@ const defaultCount = (n: number) => (n === 1 ? "1 result" : `${n.toLocaleString(
  * A sortable column header. Use it as a column's `header`:
  * `header: ({ column }) => <DataTableColumnHeader column={column} title="Views" />`.
  */
-export function DataTableColumnHeader<TData, TValue>({
+export function DataTableColumnHeader<TData extends RowData, TValue>({
   column,
   title,
   className,
 }: {
   /** The column, from the header's props. */
-  column: Column<TData, TValue>;
+  column: Column<DataTableFeatures, TData, TValue>;
   /** Header text. */
   title: string;
   className?: string;
@@ -196,7 +238,13 @@ export function DataTableColumnHeader<TData, TValue>({
   );
 }
 
-function FilterMenu<TData>({ column, filter }: { column: Column<TData, unknown>; filter: DataTableFilter }) {
+function FilterMenu<TData extends RowData>({
+  column,
+  filter,
+}: {
+  column: Column<DataTableFeatures, TData, unknown>;
+  filter: DataTableFilter;
+}) {
   const chosen = (column.getFilterValue() as string[] | undefined) ?? [];
   const counts = column.getFacetedUniqueValues();
   const options: DataTableFilterOption[] =
@@ -259,7 +307,7 @@ function FilterMenu<TData>({ column, filter }: { column: Column<TData, unknown>;
  * Applied filters show as chips that can be removed one at a time, and the row count is
  * announced to screen readers as it changes. Built on TanStack Table.
  */
-export function DataTable<TData>({
+export function DataTable<TData extends RowData>({
   columns,
   data,
   label,
@@ -284,7 +332,7 @@ export function DataTable<TData>({
   const [sorting, setSorting] = useState<SortingState>(initialSorting);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [columnVisibility, setColumnVisibility] = useState<ColumnVisibilityState>({});
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: pageSize || Number.MAX_SAFE_INTEGER });
   const [expanded, setExpanded] = useState<ExpandedState>({});
   // While searching or filtering, open every row so matches inside children are visible.
@@ -294,10 +342,11 @@ export function DataTable<TData>({
   const filterIds = new Set(filters.map((f) => f.column));
   const tableColumns = columns.map((c) => {
     const id = c.id ?? ("accessorKey" in c ? String(c.accessorKey) : undefined);
-    return id && filterIds.has(id) && !c.filterFn ? { ...c, filterFn: oneOf as FilterFn<TData> } : c;
+    return id && filterIds.has(id) && !c.filterFn ? { ...c, filterFn: oneOf as FilterFn<DataTableFeatures, TData> } : c;
   });
 
-  const table = useReactTable({
+  const table = useTable({
+    features: dataTableFeatures,
     data,
     columns: tableColumns,
     state: {
@@ -310,7 +359,6 @@ export function DataTable<TData>({
     },
     onExpandedChange: setExpanded,
     getSubRows,
-    getExpandedRowModel: getExpandedRowModel(),
     filterFromLeafRows: true,
     paginateExpandedRows: false,
     onSortingChange: setSorting,
@@ -325,18 +373,12 @@ export function DataTable<TData>({
     onColumnVisibilityChange: setColumnVisibility,
     onPaginationChange: setPagination,
     getRowId,
-    getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFacetedRowModel: getFacetedRowModel(),
-    getFacetedUniqueValues: getFacetedUniqueValues(),
-    getPaginationRowModel: getPaginationRowModel(),
   });
 
   const matched = table.getFilteredRowModel().rows.length;
   const rows = table.getRowModel().rows;
   const pageCount = table.getPageCount();
-  const { pageIndex } = table.getState().pagination;
+  const { pageIndex } = pagination;
   const first = matched === 0 ? 0 : pageIndex * pagination.pageSize + 1;
   // Sub-rows don't count: pages and totals are top-level rows.
   const last = Math.min(matched, first + rows.filter((r) => r.depth === 0).length - 1);
